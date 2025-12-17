@@ -3,6 +3,10 @@
     font-family: Arial, sans-serif;
 }
 
+.hidden-section {
+    display: none;
+    }
+
 body {
     background: #f0f2f5;
     min-height: 100vh;
@@ -426,4 +430,5 @@ button:hover {
     .select2-container .select2-selection--single .select2-selection__rendered {
         line-height: 43px !important;
     }
+
 }
