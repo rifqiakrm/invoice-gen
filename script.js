@@ -603,7 +603,7 @@ function clearFormData() {
         document.getElementById('signaturePreview').style.display = 'none';
 
         // Reset form fields ke default values
-        document.getElementById('companyName').value = 'CV RIEKI SENROKU CREATIVE';
+        document.getElementById('companyName').value = 'CV RIEKI SENOKU CREATIVE';
         document.getElementById('companyAddress').value = 'Jakarta Selatan - Indonesia';
         document.getElementById('clientName').value = 'PT ISM BOGASARI FLOUR JAKARTA';
         document.getElementById('clientAddress').value = 'Jl. Raya Clinchip, Tanjung Priok';
@@ -1385,7 +1385,7 @@ function resetFormDataOnly() {
         document.getElementById('signaturePreview').style.display = 'none';
 
         // Reset form fields ke default values
-        document.getElementById('companyName').value = 'CV RIEKI SENROKU CREATIVE';
+        document.getElementById('companyName').value = 'CV RIEKI SENOKU CREATIVE';
         document.getElementById('companyAddress').value = 'Jakarta Selatan - Indonesia';
         document.getElementById('clientName').value = 'PT ISM BOGASARI FLOUR JAKARTA';
         document.getElementById('clientAddress').value = 'Jl. Raya Clinchip, Tanjung Priok';
