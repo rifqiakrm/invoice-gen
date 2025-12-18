@@ -609,7 +609,7 @@ function clearFormData() {
         document.getElementById('clientAddress').value = 'Jl. Raya Clinchip, Tanjung Priok';
         document.getElementById('clientCity').value = 'Jakarta Utara - 14110';
         document.getElementById('npwp').value = '1000 0000 0720 7103';
-        document.getElementById('bankBranch').value = 'OCBC NISP - KC Kuningan';
+        document.getElementById('bankBranch').value = 'OCBC - Cabang OCBC Tower';
         document.getElementById('accountNumber').value = '545800120135';
         document.getElementById('accountName').value = 'CV Rieki Senoku Creative';
         document.getElementById('phoneNumber').value = '0812360111';
@@ -1391,7 +1391,7 @@ function resetFormDataOnly() {
         document.getElementById('clientAddress').value = 'Jl. Raya Clinchip, Tanjung Priok';
         document.getElementById('clientCity').value = 'Jakarta Utara - 14110';
         document.getElementById('npwp').value = '1000 0000 0720 7103';
-        document.getElementById('bankBranch').value = 'OCBC NISP - KC Kuningan';
+        document.getElementById('bankBranch').value = 'OCBC - Cabang OCBC Tower';
         document.getElementById('accountNumber').value = '545800120135';
         document.getElementById('accountName').value = 'CV Rieki Senoku Creative';
         document.getElementById('phoneNumber').value = '0812360111';
