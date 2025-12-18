@@ -280,6 +280,7 @@ function saveFormData() {
             accountNumber: document.getElementById('accountNumber').value,
             accountName: document.getElementById('accountName').value,
             phoneNumber: document.getElementById('phoneNumber').value,
+            businessEmail: document.getElementById('businessEmail').value,
 
             // Additional info
             discountAmount: document.getElementById('discountAmount').value,
@@ -367,6 +368,7 @@ function loadFormData() {
         if (formData.accountNumber) document.getElementById('accountNumber').value = formData.accountNumber;
         if (formData.accountName) document.getElementById('accountName').value = formData.accountName;
         if (formData.phoneNumber) document.getElementById('phoneNumber').value = formData.phoneNumber;
+        if (formData.businessEmail) document.getElementById('businessEmail').value = formData.businessEmail;
         if (formData.discountAmount) document.getElementById('discountAmount').value = formData.discountAmount;
         if (formData.taxPercent) document.getElementById('taxPercent').value = formData.taxPercent;
         if (formData.signatoryName) document.getElementById('signatoryName').value = formData.signatoryName;
@@ -551,7 +553,7 @@ function setupAutoSave() {
         'companyName', 'companyAddress',
         'clientName', 'clientAddress', 'clientCity',
         'invoiceNumber', 'invoiceDate',
-        'npwp', 'bankBranch', 'accountNumber', 'accountName', 'phoneNumber',
+        'npwp', 'bankBranch', 'accountNumber', 'accountName', 'phoneNumber', 'businessEmail',
         'discountAmount', 'taxPercent', 'signatoryName', 'signatoryTitle'
     ];
 
@@ -613,6 +615,7 @@ function clearFormData() {
         document.getElementById('accountNumber').value = '545800120135';
         document.getElementById('accountName').value = 'CV Rieki Senoku Creative';
         document.getElementById('phoneNumber').value = '0812360111';
+        document.getElementById('businessEmail').value = 'riekisenokucreative@gmail.com';
         document.getElementById('discountAmount').value = '0';
         document.getElementById('taxPercent').value = '0';
         document.getElementById('signatoryName').value = 'Sherly Fanny Heriyanti';
@@ -1112,8 +1115,9 @@ function previewInvoice() {
     const accountNumber = document.getElementById('accountNumber').value.trim();
     const accountName = document.getElementById('accountName').value.trim();
     const phoneNumber = document.getElementById('phoneNumber').value.trim();
+    const businessEmail = document.getElementById('businessEmail').value.trim();
 
-    const hasBankInfo = npwp || bankBranch || accountNumber || accountName || phoneNumber;
+    const hasBankInfo = npwp || bankBranch || accountNumber || accountName || phoneNumber || businessEmail;
 
     // Generate bank info HTML jika ada data
     let bankInfoHTML = '';
@@ -1129,6 +1133,7 @@ function previewInvoice() {
                 ${accountNumber ? `<div>Account Number : ${accountNumber}</div>` : ''}
                 ${accountName ? `<div>Account Name : ${accountName}</div>` : ''}
                 ${phoneNumber ? `<div>Phone Number : ${phoneNumber}</div>` : ''}
+                ${businessEmail ? `<div>Email : ${businessEmail}</div>` : ''}
             </div>
         `;
     }
@@ -1254,6 +1259,7 @@ function previewInvoice() {
                             ${accountNumber ? `<div>Account No : ${accountNumber}</div>` : ''}
                             ${accountName ? `<div>Account Name : ${accountName}</div>` : ''}
                             ${phoneNumber ? `<div>Phone : ${phoneNumber}</div>` : ''}
+                            ${businessEmail ? `<div>Email : ${businessEmail}</div>` : ''}
                         ` : ''}
                     </td>
 
@@ -1395,6 +1401,7 @@ function resetFormDataOnly() {
         document.getElementById('accountNumber').value = '545800120135';
         document.getElementById('accountName').value = 'CV Rieki Senoku Creative';
         document.getElementById('phoneNumber').value = '0812360111';
+        document.getElementById('businessEmail').value = 'riekisenokucreative@gmail.com';
         document.getElementById('discountAmount').value = '0';
         document.getElementById('taxPercent').value = '0';
         document.getElementById('signatoryName').value = 'Sherly Fanny Heriyanti';
