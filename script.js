@@ -1015,22 +1015,120 @@ function calculateTotals() {
     return { itemsData, subtotal, discount, afterDiscount, tax, grandTotal };
 }
 
-// Preview Invoice
+// ========== CONFIGURATION ==========
+const FONT_CONFIG = {
+    // Base font sizes (pt) - +20%
+    base: '18pt',           // Base font untuk seluruh dokumen (15pt → 18pt)
+    lineHeight: 1.7,        // Line height sedikit ditambah
+
+    // Header sizes - +20%
+    companyName: '26pt',    // Nama perusahaan (22pt → 26pt)
+    companyAddress: '17pt', // Alamat perusahaan (14pt → 17pt)
+    invoiceTitle: '38pt',   // Judul "INVOICE" (32pt → 38pt)
+
+    // Client info - +20%
+    clientLabel: '17pt',    // Label "To" (14pt → 17pt)
+    clientName: '19pt',     // Nama client (16pt → 19pt)
+    clientAddress: '17pt',  // Alamat client (14pt → 17pt)
+
+    // Invoice details - +20%
+    detailLabel: '17pt',    // Label "No.", "Date" (14pt → 17pt)
+    detailValue: '17pt',    // Value invoice number, date (14pt → 17pt)
+
+    // Table styles - +20%
+    tableHeader: '17pt',    // Table header (th) (14pt → 17pt)
+    tableCell: '16pt',      // Table cell biasa (td) (13pt → 16pt)
+    tablePadding: {
+        header: '22px 14px',   // Padding header (18px 12px → 22px 14px)
+        cell: '19px 12px',     // Padding cell biasa (16px 10px → 19px 12px)
+        total: '24px 12px'     // Padding row total (20px 10px → 24px 12px)
+    },
+
+    // Items table - +20%
+    itemNo: '16pt',         // Nomor urut (13pt → 16pt)
+    itemName: '16pt',       // Nama item (13pt → 16pt)
+    itemDesc: '16pt',       // Deskripsi (13pt → 16pt)
+    itemQty: '16pt',        // Quantity (13pt → 16pt)
+    itemPrice: '16pt',      // Harga (13pt → 16pt)
+    itemTotal: '16pt',      // Total per item (13pt → 16pt)
+
+    // Totals section - +20%
+    subtotal: '17pt',       // Sub total (14pt → 17pt)
+    discount: '16pt',       // Discount (13pt → 16pt)
+    tax: '16pt',            // PPH/Tax (13pt → 16pt)
+    grandTotal: '18pt',     // Grand total (15pt → 18pt)
+    netPayment: '18pt',     // Net payment (15pt → 18pt)
+
+    // Payment info - +20%
+    paymentTitle: '17pt',   // Judul "Payment Information" (14pt → 17pt)
+    paymentItem: '16pt',    // Item payment info (13pt → 16pt)
+
+    // Signature - +20%
+    signatureName: '17pt',  // Nama penandatangan (14pt → 17pt)
+    signatureTitle: '16pt', // Jabatan penandatangan (13pt → 16pt)
+    signatureWidth: '420px',// Lebar signature (350px → 420px)
+    signatureHeight: '168px',// Tinggi signature (140px → 168px)
+
+    // Counter info (hanya preview) - +20%
+    counterInfo: '16pt',    // (13pt → 16pt)
+
+    // Borders - ditambah juga
+    borderThick: '6px',     // Garis tebal (5px → 6px)
+    borderThin: '3px',      // Garis tipis (2px → 3px)
+    tableBorder: '3px'      // Border tabel (2px → 3px)
+};
+
+// Helper untuk apply font config
+function applyFontConfig() {
+    return {
+        // Base styles
+        baseStyle: `font-family: 'Arial', sans-serif; font-size: ${FONT_CONFIG.base}; line-height: ${FONT_CONFIG.lineHeight};`,
+
+        // Company header
+        companyName: `font-weight: bold; font-size: ${FONT_CONFIG.companyName};`,
+        companyAddress: `font-size: ${FONT_CONFIG.companyAddress};`,
+        invoiceTitle: `font-weight: bold; font-size: ${FONT_CONFIG.invoiceTitle}; text-decoration: underline; letter-spacing: 6px;`,
+
+        // Client info
+        clientLabel: `font-weight: bold; font-size: ${FONT_CONFIG.clientLabel};`,
+        clientName: `font-weight: bold; font-size: ${FONT_CONFIG.clientName};`,
+        clientAddress: `font-size: ${FONT_CONFIG.clientAddress};`,
+
+        // Invoice details
+        detailLabel: `font-weight: bold; font-size: ${FONT_CONFIG.detailLabel};`,
+        detailValue: `font-size: ${FONT_CONFIG.detailValue};`,
+
+        // Table
+        tableHeader: `font-size: ${FONT_CONFIG.tableHeader}; padding: ${FONT_CONFIG.tablePadding.header};`,
+        tableCell: `font-size: ${FONT_CONFIG.tableCell}; padding: ${FONT_CONFIG.tablePadding.cell};`,
+        tableTotalCell: `font-size: ${FONT_CONFIG.grandTotal}; padding: ${FONT_CONFIG.tablePadding.total}; font-weight: bold;`,
+
+        // Borders
+        thickLine: `width: 100%; height: ${FONT_CONFIG.borderThick}; background-color: #000000;`,
+        thinLine: `width: 100%; height: ${FONT_CONFIG.borderThin}; background-color: #000000;`,
+        tableBorder: `border: ${FONT_CONFIG.tableBorder} solid #ddd;`
+    };
+}
+
+// Preview Invoice dengan optimization untuk PDF
 function previewInvoice() {
     const preview = document.getElementById('invoicePreview');
     const { itemsData, subtotal, discount, afterDiscount, tax, grandTotal } = calculateTotals();
+
+    // Get font config
+    const font = applyFontConfig();
 
     // Build items table
     let itemsHTML = '';
     itemsData.forEach((item, index) => {
         itemsHTML += `
             <tr style="border-bottom: 1px solid #ddd;">
-                <td style="padding: 10px 8px; text-align: center; width: 5%;">${index + 1}</td>
-                <td style="padding: 10px 8px; width: 25%; font-weight: bold;">${item.name}</td>
-                <td style="padding: 10px 8px; width: 20%;">${item.description}</td>
-                <td style="padding: 10px 8px; text-align: center; width: 10%;">${item.qty}</td>
-                <td style="padding: 10px 8px; text-align: right; width: 15%;">${formatNumber(item.finalPrice)}</td>
-                <td style="padding: 10px 8px; text-align: right; width: 15%; font-weight: bold;">${formatNumber(item.total)}</td>
+                <td style="${font.tableCell} text-align: center; width: 5%;">${index + 1}</td>
+                <td style="${font.tableCell} width: 25%; font-weight: bold;">${item.name}</td>
+                <td style="${font.tableCell} width: 20%;">${item.description}</td>
+                <td style="${font.tableCell} text-align: center; width: 10%;">${item.qty}</td>
+                <td style="${font.tableCell} text-align: right; width: 15%;">${formatNumber(item.finalPrice)}</td>
+                <td style="${font.tableCell} text-align: right; width: 15%; font-weight: bold;">${formatNumber(item.total)}</td>
             </tr>
         `;
     });
@@ -1041,18 +1139,16 @@ function previewInvoice() {
     if (discount === 0 && tax === 0) {
         totalsHTML = `
             <tr style="background-color: #f0f0f0; border-top: 2px solid #000; border-bottom: 2px solid #000;">
-                <td colspan="5" style="padding: 14px 8px; text-align: right; font-weight: bold; font-size: 12pt;">Grand Total</td>
-                <td style="padding: 14px 8px; text-align: right; font-weight: bold; font-size: 12pt;">${formatNumber(grandTotal)}</td>
+                <td colspan="5" style="${font.tableTotalCell} text-align: right;">Grand Total</td>
+                <td style="${font.tableTotalCell} text-align: right;">${formatNumber(grandTotal)}</td>
             </tr>
         `;
     } else {
         if (discount > 0 || tax > 0) {
             totalsHTML += `
                 <tr style="border-top: 2px solid #000;">
-                    <td colspan="5" style="padding: 12px 8px; text-align: right; font-weight: bold;">Sub Total</td>
-                    <td style="padding: 12px 8px; text-align: right; font-weight: bold;">
-                        ${formatNumber(subtotal)}
-                    </td>
+                    <td colspan="5" style="${font.tableCell} text-align: right; font-weight: bold; font-size: ${FONT_CONFIG.subtotal};">Sub Total</td>
+                    <td style="${font.tableCell} text-align: right; font-weight: bold; font-size: ${FONT_CONFIG.subtotal};">${formatNumber(subtotal)}</td>
                 </tr>
             `;
         }
@@ -1060,12 +1156,8 @@ function previewInvoice() {
         if (discount > 0) {
             totalsHTML += `
                 <tr>
-                    <td colspan="5" style="padding: 10px 8px; text-align: right; font-weight: bold; color: #d32f2f;">
-                        Discount
-                    </td>
-                    <td style="padding: 10px 8px; text-align: right; font-weight: bold; color: #d32f2f;">
-                        -${formatNumber(discount)}
-                    </td>
+                    <td colspan="5" style="${font.tableCell} text-align: right; font-weight: bold; color: #d32f2f; font-size: ${FONT_CONFIG.discount};">Discount</td>
+                    <td style="${font.tableCell} text-align: right; font-weight: bold; color: #d32f2f; font-size: ${FONT_CONFIG.discount};">-${formatNumber(discount)}</td>
                 </tr>
             `;
         }
@@ -1073,22 +1165,16 @@ function previewInvoice() {
         if (tax > 0) {
             totalsHTML += `
                 <tr>
-                    <td colspan="5" style="padding: 10px 8px; text-align: right; font-weight: bold;">PPH</td>
-                    <td style="padding: 10px 8px; text-align: right; font-weight: bold;">
-                        ${formatNumber(tax)}
-                    </td>
+                    <td colspan="5" style="${font.tableCell} text-align: right; font-weight: bold; font-size: ${FONT_CONFIG.tax};">PPH</td>
+                    <td style="${font.tableCell} text-align: right; font-weight: bold; font-size: ${FONT_CONFIG.tax};">${formatNumber(tax)}</td>
                 </tr>
             `;
         }
 
         totalsHTML += `
             <tr style="background-color: #f0f0f0;">
-                <td colspan="5" style="padding: 14px 8px; text-align: right; font-weight: bold; font-size: 12pt;">
-                    Grand Total
-                </td>
-                <td style="padding: 14px 8px; text-align: right; font-weight: bold; font-size: 12pt;">
-                    ${formatNumber(grandTotal)}
-                </td>
+                <td colspan="5" style="${font.tableTotalCell} text-align: right;">Grand Total</td>
+                <td style="${font.tableTotalCell} text-align: right;">${formatNumber(grandTotal)}</td>
             </tr>
         `;
 
@@ -1096,12 +1182,8 @@ function previewInvoice() {
             const netPayment = grandTotal - tax;
             totalsHTML += `
                 <tr style="background-color: #e8f5e9; border-bottom: 2px solid #000;">
-                    <td colspan="5" style="padding: 14px 8px; text-align: right; font-weight: bold; font-size: 12pt;">
-                        Net Payment
-                    </td>
-                    <td style="padding: 14px 8px; text-align: right; font-weight: bold; font-size: 12pt;">
-                        ${formatNumber(netPayment)}
-                    </td>
+                    <td colspan="5" style="${font.tableTotalCell} text-align: right;">Net Payment</td>
+                    <td style="${font.tableTotalCell} text-align: right;">${formatNumber(netPayment)}</td>
                 </tr>
             `;
         }
@@ -1123,17 +1205,17 @@ function previewInvoice() {
     let bankInfoHTML = '';
     if (hasBankInfo) {
         bankInfoHTML = `
-            <div style="margin-bottom: 40px; font-size: 10pt;">
-                <div style="font-weight: bold; margin-bottom: 8px;">
+            <div style="margin-bottom: 40px; font-size: ${FONT_CONFIG.paymentItem}; line-height: 1.6;">
+                <div style="font-weight: bold; margin-bottom: 12px; font-size: ${FONT_CONFIG.paymentTitle};">
                     Payment Information
                 </div>
 
-                ${npwp ? `<div>NPWP : ${npwp}</div>` : ''}
-                ${bankBranch ? `<div>Bank & Branch : ${bankBranch}</div>` : ''}
-                ${accountNumber ? `<div>Account Number : ${accountNumber}</div>` : ''}
-                ${accountName ? `<div>Account Name : ${accountName}</div>` : ''}
-                ${phoneNumber ? `<div>Phone Number : ${phoneNumber}</div>` : ''}
-                ${businessEmail ? `<div>Email : ${businessEmail}</div>` : ''}
+                ${npwp ? `<div><strong>NPWP:</strong> ${npwp}</div>` : ''}
+                ${bankBranch ? `<div><strong>Bank & Branch:</strong> ${bankBranch}</div>` : ''}
+                ${accountNumber ? `<div><strong>Account Number:</strong> ${accountNumber}</div>` : ''}
+                ${accountName ? `<div><strong>Account Name:</strong> ${accountName}</div>` : ''}
+                ${phoneNumber ? `<div><strong>Phone Number:</strong> ${phoneNumber}</div>` : ''}
+                ${businessEmail ? `<div><strong>Email:</strong> ${businessEmail}</div>` : ''}
             </div>
         `;
     }
@@ -1142,23 +1224,23 @@ function previewInvoice() {
     let signatureHTML = '';
     if (signatureDataURL) {
         signatureHTML = `
-            <div style="display: inline-block; text-align: center; width: 300px;">
-                <div style="margin-bottom: 20px;"></div>
-                <img src="${signatureDataURL}" style="max-width: 250px; max-height: 100px; margin-bottom: 10px;" alt="Signature">
-                <div style="font-weight: bold; margin-top: 5px;">
+            <div style="display: inline-block; text-align: center; width: ${FONT_CONFIG.signatureWidth};">
+                <div style="margin-bottom: 100px;"></div>
+                <img src="${signatureDataURL}" style="max-width: ${FONT_CONFIG.signatureWidth}; max-height: ${FONT_CONFIG.signatureHeight}; margin-bottom: 15px;" alt="Signature">
+                <div style="font-weight: bold; margin-top: 12px; font-size: ${FONT_CONFIG.signatureName};">
                     ${document.getElementById('signatoryName').value}
                 </div>
-                <div>${document.getElementById('signatoryTitle').value}</div>
+                <div style="font-size: ${FONT_CONFIG.signatureTitle};">${document.getElementById('signatoryTitle').value}</div>
             </div>
         `;
     } else {
         signatureHTML = `
-            <div style="display: inline-block; text-align: center; width: 300px;">
-                <div style="margin-bottom: 80px;"></div>
-                <div style="font-weight: bold; border-top: 1px solid #000; padding-top: 5px; margin-top: 80px;">
+            <div style="display: inline-block; text-align: center; width: ${FONT_CONFIG.signatureWidth};">
+                <div style="margin-bottom: 200px;"></div>
+                <div style="font-weight: bold; border-top: 2px solid #000; padding-top: 12px; margin-top: 100px; font-size: ${FONT_CONFIG.signatureName};">
                     ( ${document.getElementById('signatoryName').value} )
                 </div>
-                <div>${document.getElementById('signatoryTitle').value}</div>
+                <div style="font-size: ${FONT_CONFIG.signatureTitle};">${document.getElementById('signatoryTitle').value}</div>
             </div>
         `;
     }
@@ -1167,61 +1249,56 @@ function previewInvoice() {
     const dateInput = document.getElementById('invoiceDate').value;
     const invoiceDate = dateInput || new Date().toISOString().split('T')[0];
     const currentCounter = getCounterForDate(invoiceDate);
-    const nextCounter = currentCounter; // Counter untuk invoice ini
+    const nextCounter = currentCounter;
     const formattedCounter = String(nextCounter).padStart(3, '0');
     const nextInvoiceNumber = `RSC/INV/${invoiceDate.replace(/-/g, '')}/${formattedCounter}`;
 
+    // TAMPILAN UTAMA
     preview.innerHTML = `
-        <div id="pdfContent" style="font-family: Arial, sans-serif; font-size: 11pt; line-height: 1.4; max-width: 900px; margin: 0 auto;">
+        <div id="pdfContent" style="${font.baseStyle} width: 100%; margin: 0; padding: 0;">
             <!-- Counter Info (Hanya di Preview) -->
-            <div style="background: #f8f9fa; padding: 10px; margin-bottom: 15px; border-radius: 4px; font-size: 10pt; color: #666;">
+            <div style="background: #f8f9fa; padding: 12px; margin-bottom: 20px; border-radius: 6px; font-size: ${FONT_CONFIG.counterInfo}; color: #666; display: none;" class="counter-info-pdf">
                 📊 Next invoice number: ${nextInvoiceNumber}<br>
                 Counter for ${invoiceDate}: ${currentCounter} (${currentCounter-1} invoice(s) already generated)
             </div>
             
             <!-- Company Header -->
-            <div style="text-align: left; margin-bottom: 50px;">
-                <div style="font-weight: bold; font-size: 14pt; margin-bottom: 3px;">
-                    ${document.getElementById('companyName').value}
-                </div>
-                <div style="margin-bottom: 10px;">
-                    ${document.getElementById('companyAddress').value}
-                </div>
+            <div style="text-align: left; margin-bottom: 60px;">
+                <div style="${font.companyName} margin-bottom: 8px;">${document.getElementById('companyName').value}</div>
+                <div style="${font.companyAddress} margin-bottom: 20px;">${document.getElementById('companyAddress').value}</div>
                 
                 <!-- Thick Line -->
-                <div style="width: 100%; height: 3px; background-color: #000000; margin-bottom: 3px;"></div>
+                <div style="${font.thickLine} margin-bottom: 5px;"></div>
                 <!-- Thin Line -->
-                <div style="width: 100%; height: 1px; background-color: #000000; margin-bottom: 20px;"></div>
+                <div style="${font.thinLine} margin-bottom: 30px;"></div>
                 
                 <!-- INVOICE Title -->
-                <div style="text-align: center; margin-top: 25px;">
-                    <div style="font-weight: bold; font-size: 18pt; text-decoration: underline; letter-spacing: 3px;">
-                        INVOICE
-                    </div>
+                <div style="text-align: center; margin-top: 40px;">
+                    <div style="${font.invoiceTitle}">INVOICE</div>
                 </div>
             </div>
             
             <!-- Layout 2 Columns -->
-            <table style="width: 100%; margin-bottom: 30px; border-collapse: collapse;">
+            <table style="width: 100%; margin-bottom: 40px; border-collapse: collapse;">
                 <tr>
-                    <td style="width: 60%; vertical-align: top; padding-right: 20px;">
-                        <div style="margin-bottom: 5px;"><strong>To</strong></div>
-                        <div style="font-weight: bold;">${document.getElementById('clientName').value}</div>
-                        <div>${document.getElementById('clientAddress').value}</div>
-                        <div>${document.getElementById('clientCity').value}</div>
+                    <td style="width: 60%; vertical-align: top; padding-right: 30px;">
+                        <div style="${font.clientLabel} margin-bottom: 12px;"><strong>To</strong></div>
+                        <div style="${font.clientName} margin-bottom: 8px;">${document.getElementById('clientName').value}</div>
+                        <div style="${font.clientAddress} margin-bottom: 5px;">${document.getElementById('clientAddress').value}</div>
+                        <div style="${font.clientAddress}">${document.getElementById('clientCity').value}</div>
                     </td>
                     
                     <td style="width: 40%; vertical-align: top;">
-                        <table style="width: 100%; font-size: 11pt;">
+                        <table style="width: 100%; font-size: ${FONT_CONFIG.detailValue};">
                             <tr>
-                                <td style="padding: 3px 0; font-weight: bold; width: 25%;">No.</td>
-                                <td style="padding: 3px 0; width: 5%;">:</td>
-                                <td style="padding: 3px 0;">${document.getElementById('invoiceNumber').value}</td>
+                                <td style="padding: 6px 0; ${font.detailLabel} width: 25%;">No.</td>
+                                <td style="padding: 6px 0; width: 5%;">:</td>
+                                <td style="padding: 6px 0; ${font.detailValue} font-weight: bold;">${document.getElementById('invoiceNumber').value}</td>
                             </tr>
                             <tr>
-                                <td style="padding: 3px 0; font-weight: bold;">Date</td>
-                                <td style="padding: 3px 0;">:</td>
-                                <td style="padding: 3px 0;">${formatDateIndonesian(document.getElementById('invoiceDate').value)}</td>
+                                <td style="padding: 6px 0; ${font.detailLabel}">Date</td>
+                                <td style="padding: 6px 0;">:</td>
+                                <td style="padding: 6px 0; ${font.detailValue}">${formatDateIndonesian(document.getElementById('invoiceDate').value)}</td>
                             </tr>
                         </table>
                     </td>
@@ -1229,15 +1306,15 @@ function previewInvoice() {
             </table>
             
             <!-- Items Table -->
-            <table style="width: 100%; border-collapse: collapse; margin-bottom: 20px; font-size: 10pt;">
+            <table style="width: 100%; border-collapse: collapse; margin-bottom: 30px; ${font.tableBorder}">
                 <thead>
-                    <tr style="background-color: #f0f0f0; border-top: 2px solid #000; border-bottom: 2px solid #000;">
-                        <th style="padding: 12px 8px; text-align: center; width: 5%;">No</th>
-                        <th style="padding: 12px 8px; text-align: left; width: 25%;">Scope of Work (SoW)</th>
-                        <th style="padding: 12px 8px; text-align: left; width: 20%;">Description</th>
-                        <th style="padding: 12px 8px; text-align: center; width: 10%;">QTY</th>
-                        <th style="padding: 12px 8px; text-align: center; width: 15%;">Unit Price</th>
-                        <th style="padding: 12px 8px; text-align: center; width: 15%;">Total</th>
+                    <tr style="background-color: #f0f0f0; border-top: 3px solid #000; border-bottom: 3px solid #000;">
+                        <th style="${font.tableHeader} text-align: center; width: 5%;">No</th>
+                        <th style="${font.tableHeader} text-align: left; width: 25%;">Scope of Work (SoW)</th>
+                        <th style="${font.tableHeader} text-align: left; width: 20%;">Description</th>
+                        <th style="${font.tableHeader} text-align: center; width: 10%;">QTY</th>
+                        <th style="${font.tableHeader} text-align: center; width: 15%;">Unit Price</th>
+                        <th style="${font.tableHeader} text-align: center; width: 15%;">Total</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -1246,21 +1323,11 @@ function previewInvoice() {
             </table>
             
             <!-- Payment Info & Signature (Sejajar) -->
-            <table style="width: 100%; margin-top: 40px; font-size: 10pt;">
+            <table style="width: 100%; margin-top: 60px; font-size: ${FONT_CONFIG.paymentItem};">
                 <tr>
                     <!-- KOLOM KIRI: PAYMENT INFORMATION -->
                     <td style="width: 50%; vertical-align: top;">
-                        ${hasBankInfo ? `
-                            <div style="font-weight: bold; margin-bottom: 8px;">
-                                Payment Information
-                            </div>
-                            ${npwp ? `<div>NPWP : ${npwp}</div>` : ''}
-                            ${bankBranch ? `<div>Bank & Branch : ${bankBranch}</div>` : ''}
-                            ${accountNumber ? `<div>Account No : ${accountNumber}</div>` : ''}
-                            ${accountName ? `<div>Account Name : ${accountName}</div>` : ''}
-                            ${phoneNumber ? `<div>Phone : ${phoneNumber}</div>` : ''}
-                            ${businessEmail ? `<div>Email : ${businessEmail}</div>` : ''}
-                        ` : ''}
+                        ${bankInfoHTML}
                     </td>
 
                     <!-- KOLOM KANAN: SIGNATURE -->
@@ -1308,7 +1375,11 @@ function generatePDF() {
             }
         }).then(canvas => {
             const imgData = canvas.toDataURL('image/png');
-            const pdf = new jspdf.jsPDF('p', 'mm', 'a4');
+            const pdf = new jspdf.jsPDF({
+                orientation: 'portrait',
+                unit: 'mm',
+                format: [215.9, 330.2] // F4 size
+            });
             const imgWidth = 190;
             const imgHeight = canvas.height * imgWidth / canvas.width;
             pdf.addImage(imgData, 'PNG', 10, 10, imgWidth, imgHeight);
